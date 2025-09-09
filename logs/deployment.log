@@ -1,0 +1,8 @@
+2025-08-27 13:13:03,437 [INFO] Successfully connected to the database.
+2025-08-27 13:13:03,449 [INFO] Ensured 'CUSTOM_StoredProcedureDeploymentMetadata' table exists.
+2025-08-27 13:13:03,451 [INFO] Skipping 'usp_test.sql': No changes detected.
+2025-08-27 13:13:03,452 [INFO] --- Deployment Summary ---
+2025-08-27 13:13:03,453 [INFO] Deployed: 0 stored procedures
+2025-08-27 13:13:03,453 [INFO] Skipped: 1 stored procedures (no changes)
+2025-08-27 13:13:03,453 [INFO] Errors: 0 stored procedures
+2025-08-27 13:13:03,453 [INFO] Deployment completed successfully.
