@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import time
 from logging.handlers import RotatingFileHandler
 
 import pyodbc
@@ -39,9 +40,11 @@ def get_db_connection():
     username = os.getenv("DB_USERNAME")
     password = os.getenv("DB_PASSWORD")
     port = os.getenv("DB_PORT")
-    
+
     # Add this print statement for debugging
-    print(f"Attempting to connect with: Server={server}, User={username}, DB={database}, Port={port}")
+    logging.info(
+        f"Attempting to connect with: Server={server}, User={username}, DB={database}, Port={port}"
+    )
 
     if not all([server, database, username, password]):
         logging.error(
@@ -49,6 +52,9 @@ def get_db_connection():
             "DB_SERVER, DB_DATABASE, DB_USERNAME, DB_PASSWORD, DB_PORT"
         )
         sys.exit(1)
+
+    max_retries = 10
+    retry_delay = 5  # seconds
 
     cnxn_str = (
         f"DRIVER={{ODBC Driver 17 for SQL Server}};"
@@ -58,13 +64,21 @@ def get_db_connection():
         f"PWD={password}"
     )
 
-    try:
-        cnxn = pyodbc.connect(cnxn_str)
-        logging.info("Successfully connected to the database.")
-        return cnxn
-    except pyodbc.Error as ex:
-        logging.error(f"Database connection error: {ex}")
-        sys.exit(1)
+    for i in range(max_retries):
+        try:
+            cnxn = pyodbc.connect(cnxn_str)
+            logging.info("Successfully connected to the database.")
+            return cnxn
+        except pyodbc.Error as ex:
+            # Log warning for each failed attempt
+            logging.warning(
+                f"Attempt {i+1}/{max_retries}: Database connection error: {ex}"
+            )
+            time.sleep(retry_delay)
+
+    # This line is only reached if the loop completes without returning
+    logging.error("Failed to connect to the database after multiple retries.")
+    sys.exit(1)
 
 
 def calculate_file_hash(filepath):
