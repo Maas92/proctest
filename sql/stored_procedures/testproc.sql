@@ -1,8 +1,8 @@
-CREATE PROCEDURE procedure_name
+CREATE OR ALTER PROCEDURE procedure_name
 AS
 BEGIN
     -- SQL statements that the stored procedure will execute
     -- For example:
-    SELECT 'HelloWorld' as columna
+    SELECT 'HelloWorld more from the world' as columna
 END;
 GO

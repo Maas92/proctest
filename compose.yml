@@ -1,0 +1,77 @@
+services:
+  mssql_uat:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "StrongPassword123**"
+      MSSQL_AGENT_ENABLED: true
+    ports:
+      - 1433:1433
+    volumes:
+      - sqlserver_uat:/var/opt/mssql
+    #healthcheck:
+    #  test: ["CMD-SHELL", "ss -ltn | grep ':1433'"]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 5
+    #  start_period: 30s
+    networks:
+      - mssql_default
+
+  oldman-jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins-vol:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    networks:
+      - mssql_default
+    #depends_on:
+    #  mssql_uat:
+    #    condition: service_healthy
+  
+  bitbucket:
+    image: atlassian/bitbucket:latest
+    container_name: bitbucket
+    restart: unless-stopped
+    ports:
+      - "7990:7990"   # Web UI
+      - "7999:7999"   # SSH Git access
+    volumes:
+      - ./bitbucket_data:/var/atlassian/application-data/bitbucket
+    environment:
+      - JVM_MINIMUM_MEMORY=2g
+      - JVM_MAXIMUM_MEMORY=4g
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_JDBC_URL=jdbc:postgresql://db:5432/bitbucket
+      - ATL_JDBC_USER=bitbucket
+      - ATL_JDBC_PASSWORD=bitbucket
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    container_name: bitbucket_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=bitbucket
+      - POSTGRES_USER=bitbucket
+      - POSTGRES_PASSWORD=bitbucket
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+networks:
+  mssql_default:
+    driver: bridge
+
+volumes:
+  jenkins-vol:
+    driver: local
+  sqlserver_uat:
