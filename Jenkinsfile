@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('Run Deployment Script') {
             when {
-                branch 'main'   // ✅ run only on direct pushes to main
+                branch 'master'   // ✅ run only on direct pushes to main
             }
             steps {
                 withEnv([
