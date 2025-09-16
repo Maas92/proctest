@@ -17,11 +17,7 @@ pipeline {
     stages {
         stage('Run Deployment Script') {
             when {
-                // allOf {
-                    // expression { env.CHANGE_ID == null } // ensures this is not a PR build
-                    // branch 'main'                       // run only after PR is merged into main
-                // }
-                branch 'main'  
+                branch 'main'   // ✅ run only on direct pushes to main
             }
             steps {
                 withEnv([
@@ -31,9 +27,7 @@ pipeline {
                     "DB_DATABASE=${env.DB_NAME}",
                     "DB_PORT=${env.DB_PORT}"
                 ]) {
-                    sh """
-                    python deploy.py
-                    """
+                    sh "python deploy.py"
                 }
             }
         }
@@ -41,7 +35,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Successfully deployed after PR merge to main."
+            echo "✅ Successfully deployed on push to main."
         }
         failure {
             echo "❌ Deployment failed."
