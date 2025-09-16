@@ -18,7 +18,7 @@ pipeline {
         stage('Run Deployment Script') {
             when {
                 allOf {
-                    expression { env.CHANGE_ID == null } // ensures this is not a PR build
+                    // expression { env.CHANGE_ID == null } // ensures this is not a PR build
                     branch 'main'                       // run only after PR is merged into main
                 }
             }
