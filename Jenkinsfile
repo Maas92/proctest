@@ -17,10 +17,11 @@ pipeline {
     stages {
         stage('Run Deployment Script') {
             when {
-                allOf {
+                // allOf {
                     // expression { env.CHANGE_ID == null } // ensures this is not a PR build
-                    branch 'main'                       // run only after PR is merged into main
-                }
+                    // branch 'main'                       // run only after PR is merged into main
+                // }
+                branch 'main'  
             }
             steps {
                 withEnv([
