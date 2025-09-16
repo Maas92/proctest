@@ -3,6 +3,6 @@ AS
 BEGIN
     -- SQL statements that the stored procedure will execute
     -- For example:
-    SELECT 'HelloWorld more from the world' as columna
+    SELECT 'HelloWorld more from the world' as columna, 'HelloWorld more from the world' as columnb;
 END;
 GO
